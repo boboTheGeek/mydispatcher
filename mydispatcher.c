@@ -9,19 +9,56 @@ File Updated: Oct 15, 2018
 
 #include <stdio.h>
 #include<string.h>
+#include <time.h>
 
 #include "mydispatcher.h"
 
+int globalTimeTicker = 0;  
+unsigned short int queuePos = 0;
+
+
+
+
 int main(int argc, char *argv[]){
 	FILE *fp;
-	int arrivalTime, executionTime, pid = 1;
-	
-	if (!(fp = fopen(argv[1], "rb"))){
-		perror("sorry, .dat file import problem\n");
+	int arrivalTime_in, exeTime_in, pid = 1;
+	 
+     
+    clock_t start, end;
+    double cpu_time_used;
+    start = clock();
+
+	char testmode = 0;
+
+	if (strcmp(argv[1], "-t")==0) {
+		testmode = 1;
+		if (!(fp = fopen("test.dat", "rb"))){
+			perror("test .dat open filed\n");
+		}
+		printf("Struct \nindex: pid: arrivalTime: ");
+		printf("exeTime: totExeTime: remExeTime: exeStartTime\n");
+		argv[2] = "FCFS";
+		argc = 3;
 	}
-	
-	while (fscanf(fp, "%d %d", &arrivalTime, &executionTime) != EOF) {
-		printf("%d %d %d\n", pid, arrivalTime, executionTime );
+	else {
+		if (!(fp = fopen(argv[1], "rb"))){
+			perror("sorry, .dat file import problem\n");
+			printf("provide the .dat file as first argument, should be in the same folder as executible\n");
+		}
+	}
+
+	while (fscanf(fp, "%d %d", &arrivalTime_in, &exeTime_in) != EOF) {
+		//printf("            p: %d            aT: %d         eT: %d\n", pid, arrivalTime_in, exeTime_in);
+		processes[pid-1].pid = pid;
+		processes[pid-1].arrivalTime = arrivalTime_in;
+		processes[pid-1].exeTime = exeTime_in;
+		processes[pid-1].totExeTime = 0;
+		processes[pid-1].remExeTime = exeTime_in;
+		//processes[pid-1].exeStartTime = -1;     //initialize to invalid number for additional info
+		if(testmode == 1){
+			printf("%5d %5d %7d ", pid-1, processes[pid-1].pid, processes[pid-1].arrivalTime);
+			printf("%10d %10d %10d %10d\n",processes[pid-1].exeTime, processes[pid-1].totExeTime, processes[pid-1].remExeTime, processes[pid-1].exeStartTime);
+		}
 		pid++;
 	}
 	
@@ -46,6 +83,11 @@ int main(int argc, char *argv[]){
 		printf("FCFS, RR, STN, SRT\n");
 		return 1;                            //end unsuccessfully
 	}
+
+
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("programExecutionTime: %f", cpu_time_used);
     return 0;                                //finish successfully
 }
 
