@@ -14,9 +14,8 @@ File Updated: Oct 15, 2018
 #include "mydispatcher.h"
 
 int globalTimeTicker = 0;  
-unsigned short int queuePos = 0;
-
-
+unsigned short int queuePos = 0;       //keeps track of the last process queued, ready to "execute"
+unsigned short int activeProcess = 0;  //keeps track of which process is "executing"
 
 
 int main(int argc, char *argv[]){
@@ -54,7 +53,7 @@ int main(int argc, char *argv[]){
 		processes[pid-1].exeTime = exeTime_in;
 		processes[pid-1].totExeTime = 0;
 		processes[pid-1].remExeTime = exeTime_in;
-		//processes[pid-1].exeStartTime = -1;     //initialize to invalid number for additional info
+		processes[pid-1].complete = 0;     //initialize to invalid number for additional info
 		if(testmode == 1){
 			printf("%5d %5d %7d ", pid-1, processes[pid-1].pid, processes[pid-1].arrivalTime);
 			printf("%10d %10d %10d %10d\n",processes[pid-1].exeTime, processes[pid-1].totExeTime, processes[pid-1].remExeTime, processes[pid-1].exeStartTime);
