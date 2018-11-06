@@ -11,13 +11,15 @@ File Updated: Oct 15, 2018
 #include "mydispatcher.h"
 
 int roundRobin(unsigned short int sliceSizeIn){
-    
+	
     unsigned short int activeProcess = 0;             //which process is "executing"
     int activeProcessesExist = 1;                      //assume at least one live process at init
     unsigned short int queuePos = 0;                  //keeps track of the last process queued, ready to "execute"
     unsigned short int slicePosition = 1;             //how far through the time slice we are
     unsigned short int sliceSize = sliceSizeIn;
-    
+	int tP = 1500; 
+	int expiredCounter = 0;
+	
     /*update new processes to queue for each timestep*/
     while (activeProcessesExist) {                    //check processes left that aren't finished
         unsigned short int index = 0;                 //start evaluation of processes at row 1
@@ -30,17 +32,21 @@ int roundRobin(unsigned short int sliceSizeIn){
                     queuePos++;                        //move to next free space in array
                 }
             }
+			
             index++;                                   //increment to next struct in array
         }
 
-        
+		
         if (!queue[activeProcess]->exeStartTime)       //if this process just began to execute
             queue[activeProcess]->exeStartTime = globalTimeTicker;  //record the start time
         queue[activeProcess]->totExeTime ++;           //increment the time it has run /////// redundant
         if ((queue[activeProcess]->remExeTime --) == 0){//decreast time remaining and see if it's 0
             queue[activeProcess]->complete = 1;        //if so, mark as complete
             activeProcess++;                           //move to next process in queue
-            slicePosition = 1-1;
+			activeProcess = activeProcess % tP;
+			//printf("queueIndx_%d\n", activeProcess);
+			slicePosition = 1-1;
+			expiredCounter++;
             
             
             if (!queue[activeProcess]){                //if no more in queue
@@ -52,7 +58,7 @@ int roundRobin(unsigned short int sliceSizeIn){
                     }
                     activeProcess ++;                          //skip to a live process
                 }
-                
+				
             }
         }
         
@@ -74,11 +80,14 @@ int roundRobin(unsigned short int sliceSizeIn){
         if (activeProcessesExist == 0){                //if all processes are complete
             return 0;                                  // finish successfully
         } else {
-            printf("%ld=ticks %d=active ", globalTimeTicker, activeProcessesExist);
-            printf("%d=rem %d=activeProcess  %d=x\n", queue[activeProcess]->remExeTime, activeProcess, index);
+			printf("time:%6ld   Q[i]:%6d   PID:%6d   ", globalTimeTicker, activeProcess, queue[activeProcess]->pid);
+			printf("remains:%4d   sliceloc:%4d\n", queue[activeProcess]->remExeTime, slicePosition);
             globalTimeTicker ++;                       //otherwise, there's more work to do, go to next time step
         }
         
+		if (expiredCounter > tP){
+			break;
+		}
 
     }
     
