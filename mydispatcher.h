@@ -6,6 +6,7 @@ Professor:    Dr. Lee
 File Created: Oct 15, 2018
 File Updated: Nov 3, 2018
 */
+#include <stdio.h>
 
 #define TOTAL_ROWS 10000
 
@@ -27,6 +28,6 @@ struct Process processes[TOTAL_ROWS];   //a list of the process structs
 struct Process *queue[TOTAL_ROWS];      //set the queue to the same size as number of rows, but could be more efficient
 
 int firstComeFirstServe();
-int roundRobin();
+int roundRobin(unsigned short int sliceSizeIn);
 int shortestTimeNext();
 int shortestRemainingTime();

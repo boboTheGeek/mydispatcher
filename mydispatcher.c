@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
             printf("Struct \nindex: pid: arrivalTime: ");
             printf("exeTime: totExeTime: remExeTime: exeStartTime\n");
         }
-		argv[2] = "FCFS";
+		argv[2] = "RR";
 		argc = 3;
 	}
 	else {
@@ -68,7 +68,8 @@ int main(int argc, char *argv[]){
         firstComeFirstServe();
 	}
 	else if (strcmp(argv[2], "RR") == 0){    //check for and run RR algorithm request
-		roundRobin();
+		roundRobin(3);
+        printf("RR\n");
 	}
 	else if (strcmp(argv[2], "STN") == 0){   //check for and run STN algorithm request
 		shortestTimeNext();
