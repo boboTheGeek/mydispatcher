@@ -12,11 +12,11 @@ File Updated: Oct 15, 2018
 
 int roundRobin(unsigned short int sliceSizeIn){
 	
-    unsigned short int activeProcess = 0;             //which process is "executing"
+    unsigned short activeProcess = 0;             //which process is "executing"
     int activeProcessesExist = 1;                      //assume at least one live process at init
-    unsigned short int queuePos = 0;                  //keeps track of the last process queued, ready to "execute"
-    unsigned short int slicePosition = 1;             //how far through the time slice we are
-    unsigned short int sliceSize = sliceSizeIn;
+    unsigned short queuePos = 0;                  //keeps track of the last process queued, ready to "execute"
+    unsigned short slicePosition = 1;             //how far through the time slice we are
+    unsigned short sliceSize = sliceSizeIn;
 	int tP = 1500; 
 	int expiredCounter = 0;
 	
@@ -44,7 +44,6 @@ int roundRobin(unsigned short int sliceSizeIn){
             queue[activeProcess]->complete = 1;        //if so, mark as complete
             activeProcess++;                           //move to next process in queue
 			activeProcess = activeProcess % tP;
-			//printf("queueIndx_%d\n", activeProcess);
 			slicePosition = 1-1;
 			expiredCounter++;
             

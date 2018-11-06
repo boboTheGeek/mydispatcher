@@ -10,7 +10,7 @@ File Updated: Nov 3, 2018
 
 #define TOTAL_ROWS 10000
 
-long globalTimeTicker;                   //a ticker that will keep track of schedule position
+unsigned long globalTimeTicker;                   //a ticker that will keep track of schedule position
 unsigned short int queuePos;
 unsigned short int activeProcess;
 

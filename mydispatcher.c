@@ -12,7 +12,7 @@ File Updated: Nov 3, 2018
 
 #include "mydispatcher.h"
 
-long globalTimeTicker = 0;  
+unsigned long globalTimeTicker = 0;
 
 char trace = 0;                         //just a trace mode for testing
 char testmode = 0;
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
             printf("Struct \nindex: pid: arrivalTime: ");
             printf("exeTime: totExeTime: remExeTime: exeStartTime\n");
         }
-		argv[2] = "RR";
+		argv[2] = "STN";
 		argc = 3;
 	}
 	else {
@@ -68,11 +68,12 @@ int main(int argc, char *argv[]){
         firstComeFirstServe();
 	}
 	else if (strcmp(argv[2], "RR") == 0){    //check for and run RR algorithm request
+		
 		roundRobin(3);
-        printf("RR\n");
+		printf("RR\n");
 	}
 	else if (strcmp(argv[2], "STN") == 0){   //check for and run STN algorithm request
-		shortestTimeNext();
+		shortestTimeNext(1500);
 	}
 	else if (strcmp(argv[2], "SRT") == 0){   //check for and run SRT algorithm request
 		shortestRemainingTime();
