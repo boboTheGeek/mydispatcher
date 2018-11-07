@@ -10,24 +10,23 @@ File Updated: Nov 3, 2018
 
 #define TOTAL_ROWS 10000
 
-unsigned long globalTimeTicker;                   //a ticker that will keep track of schedule position
+unsigned long globalTimeTicker;                       //a ticker that will keep track of schedule position
 unsigned short int queuePos;
 unsigned short int activeProcess;
 
-struct Process {                       //move me later
-	unsigned short int pid;
-	unsigned short int arrivalTime;
-	unsigned short int exeTime;
-	unsigned short int totExeTime;
-	unsigned short int remExeTime;
-	unsigned short int exeStartTime;
+struct Process {
+	unsigned short pid;
+	unsigned short arrivalTime;
+	unsigned short exeTime;
+	unsigned short remExeTime;
+	unsigned short exeStartTime;
 	char complete;
 };
 
-struct Process processes[TOTAL_ROWS];   //a list of the process structs
-struct Process *queue[TOTAL_ROWS];      //set the queue to the same size as number of rows, but could be more efficient
+struct Process processes[TOTAL_ROWS];                  //a list of the process structs
+struct Process *queue[TOTAL_ROWS];                     //set the queue to the same size as number of rows, but could be more efficient
 
 int firstComeFirstServe();
-int roundRobin(unsigned short int sliceSizeIn);
+int roundRobin();
 int shortestTimeNext();
 int shortestRemainingTime();
