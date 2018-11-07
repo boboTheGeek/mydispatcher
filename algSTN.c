@@ -64,7 +64,7 @@ int shortestTimeNext(int tPin){
 			globalTimeTicker++;                       //otherwise, there's more work to do, go to next time step
 		}
 
-		if (expiredCounter > tP){
+		if (expiredCounter >= tP){
 			break;
 		}
 

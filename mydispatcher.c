@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
             printf("Struct \nindex: pid: arrivalTime: ");
             printf("exeTime: totExeTime: remExeTime: exeStartTime\n");
         }
-		argv[2] = "STN";
+		argv[2] = "SRT";
 		argc = 3;
 	}
 	else {
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]){
 		shortestTimeNext(1500);
 	}
 	else if (strcmp(argv[2], "SRT") == 0){   //check for and run SRT algorithm request
-		shortestRemainingTime();
+		shortestRemainingTime(1500);
 	}
 	else{                                    //if the input parameter string wasn't found, warn and remind what is OK
 		printf("Make sure you're <ALGORITHM> parameter is one of the following [in all caps]:\n");
