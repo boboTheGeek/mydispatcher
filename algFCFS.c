@@ -9,7 +9,7 @@
 
 #include "mydispatcher.h"
 
-int firstComeFirstServe(){
+int firstComeFirstServe(unsigned short tPin){
 
     unsigned short int activeProcess = 0;             //which process is "executing"
     int activeProcessesExist = 1;                      //assume at least one live process at init

@@ -9,12 +9,11 @@ File Updated: Nov 6, 2018
 
 #include "mydispatcher.h"
 
-int shortestTimeNext(int tPin){
+int shortestTimeNext(unsigned short tPin){
 
 	unsigned short activeProcess = 0;                 //which process is "executing"
 	unsigned short activeProcessesExist = 1;          //assume at least one live process at init
 	unsigned short queuePos = 0;                      //keeps track of the last process queued, ready to "execute"
-
 	unsigned short tP = tPin;                         //grab the total number of processes
 	unsigned short expiredCounter = 0;                //keep track of processes complete
 	unsigned short i = 0;                             //counter

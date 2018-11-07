@@ -9,7 +9,7 @@ File Updated: Oct 15, 2018
 
 #include "mydispatcher.h"
 
-int roundRobin(){
+int roundRobin(unsigned short pid){
 	
     unsigned short activeProcess = 0;                 //which process is "executing"
     unsigned short activeProcessesExist = 1;          //assume at least one live process at init
@@ -17,7 +17,7 @@ int roundRobin(){
     unsigned short slicePosition = 1;                 //how far through the time slice we are
     unsigned short sliceSize = 1;                     //default quantum size
     unsigned short sliceIn = 1;                       //init quantum input size
-	int tP = 1500;                                     //number of processes
+	int tP = pid;                                     //number of processes
 	int expiredCounter = 0;                            //number of completed processes
 	
     printf("select quantum size or hit ENTER for default (1) \n");
@@ -27,7 +27,7 @@ int roundRobin(){
     
     /*update new processes to queue for each timestep*/
     while (activeProcessesExist) {                    //check processes left that aren't finished
-        unsigned short int index = 0;                 //start evaluation of processes at row 1
+        unsigned short index = 0;                     //start evaluation of processes at row 1
         while (processes[index].pid){                  //iterate input data
             struct Process *ptr = &processes[index];   //assign pointer to the struct
             if (!ptr->complete){                       //check if the process is live
@@ -37,11 +37,9 @@ int roundRobin(){
                     queuePos++;                        //move to next free space in array
                 }
             }
-			
             index++;                                   //increment to next struct in array
         }
 
-		
         if (!queue[activeProcess]->exeStartTime)       //if this process just began to execute
             queue[activeProcess]->exeStartTime = globalTimeTicker;  //record the start time
         if ((queue[activeProcess]->remExeTime --) == 0){//decreast time remaining and see if it's 0
@@ -69,7 +67,7 @@ int roundRobin(){
             if(!queue[activeProcess]){                 //if there is no process there
                 activeProcess = 0;                     //
             }
-            slicePosition = 1-1;                         //
+            slicePosition = 1;                         //
         } else {
             slicePosition ++;                          //normally, just increment quantum position
         }
@@ -86,7 +84,7 @@ int roundRobin(){
             globalTimeTicker ++;                       //otherwise, there's more work to do, go to next time step
         }
         
-		if (expiredCounter > tP){
+		if (expiredCounter >= tP){
 			break;
 		}
 

@@ -17,6 +17,15 @@ unsigned long globalTimeTicker = 0;
 char trace = 0;                         //just a trace mode for testing
 char testmode = 0;
 
+void printArray(unsigned short pid){
+    printf("Struct \nindex: pid: arrivalTime: ");
+    printf("exeTime: remExeTime: exeStartTime\n");
+    for (int x =0; x < pid; x++){
+        printf("%5d %5d %7d ", x, processes[x].pid, processes[x].arrivalTime);
+        printf("%10d %10d %10d\n",processes[x].exeTime, processes[x].remExeTime, processes[x].exeStartTime);
+    }
+}
+
 int main(int argc, char *argv[]){
 	FILE *fp;                                          //pointer for a file
 	int arrivalTime_in, exeTime_in, pid = 1;           //
@@ -50,12 +59,6 @@ int main(int argc, char *argv[]){
 		processes[pid-1].exeTime = exeTime_in;         //grab service time from second column in file
 		processes[pid-1].remExeTime = exeTime_in;      //set the remaining time counter to service time as well
 		processes[pid-1].complete = 0;                 //initialize to incomplete
-		
-        if((testmode == 1) && (trace == 1)){
-			printf("%5d %5d %7d ", pid-1, processes[pid-1].pid, processes[pid-1].arrivalTime);
-			printf("%10d %10d %10d\n",processes[pid-1].exeTime, processes[pid-1].remExeTime, processes[pid-1].exeStartTime);
-		}
-        
 		pid++;                                         //increase the counter index
 	}
 	
@@ -64,16 +67,16 @@ int main(int argc, char *argv[]){
 		return 1;                                     //end unsuccessfully
 	}
 	else if (strcmp(argv[2], "FCFS") == 0){           //check for and run FCFS algorithm request
-        firstComeFirstServe();
+        firstComeFirstServe(pid);
 	}
 	else if (strcmp(argv[2], "RR") == 0){             //check for and run RR algorithm request
-		roundRobin();
+		roundRobin(pid);
 	}
 	else if (strcmp(argv[2], "STN") == 0){            //check for and run STN algorithm request
-        shortestTimeNext(1500);
+        shortestTimeNext(pid);
     }
 	else if (strcmp(argv[2], "SRT") == 0){            //check for and run SRT algorithm request
-        shortestRemainingTime(1500);
+        shortestRemainingTime(pid);
 	}
 	else{                                              //if the input parameter string wasn't found, warn and remind what is OK
 		printf("Make sure you're <ALGORITHM> parameter is one of the following [in all caps]:\n");
@@ -82,6 +85,7 @@ int main(int argc, char *argv[]){
 	}
 
     //run statistics on processes[] array
+    printArray(pid);
     
     
     end = clock();                                     //finish clock and print exectution timer
