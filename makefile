@@ -8,8 +8,8 @@
 
 
 
-SOURCES = mydispatcher.c algFCFS.c algRR.c algSTN.c algSRT.c
-OBJECTS = mydispatcher.o algFCFS.o algRR.o algSTN.o algSRT.o
+SOURCES = mydispatcher.c algFCFS.c algRR.c algSTN.c algSRT.c libstats.c
+OBJECTS = mydispatcher.o algFCFS.o algRR.o algSTN.o algSRT.o libstats.o
 HEADERS = mydispatcher.h
 CC = gcc
 CFLAGS = -g -Wall

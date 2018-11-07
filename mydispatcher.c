@@ -14,16 +14,28 @@ File Updated: Nov 3, 2018
 
 unsigned long globalTimeTicker = 0;
 
-char trace = 0;                         //just a trace mode for testing
-char testmode = 0;
+void printArray(){
+    printf("index: pid: arrivalTime: ");
+    printf("exeTime: remExeTime: exeDoneTime  turnaroundTime\n");
+	for (int i = 0; i < TOTAL_ROWS; i++){
+        printf("%5d %5d %7d ", i, processes[i].pid, processes[i].arrivalTime);
+        printf("%10d %10d %10d %10d\n",processes[i].exeTime, processes[i].remExeTime, processes[i].exeDoneTime, processes[i].turnaroundTime);
 
-void printArray(unsigned short pid){
-    printf("Struct \nindex: pid: arrivalTime: ");
-    printf("exeTime: remExeTime: exeStartTime\n");
-    for (int x =0; x < pid; x++){
-        printf("%5d %5d %7d ", x, processes[x].pid, processes[x].arrivalTime);
-        printf("%10d %10d %10d\n",processes[x].exeTime, processes[x].remExeTime, processes[x].exeStartTime);
     }
+}
+
+void writeToFile(){
+	FILE * fp;
+	/* open the file for writing*/
+	fp = fopen("output.dat", "w");
+	for (int i = 0; i < TOTAL_ROWS; i++){
+		fprintf(fp, "%5d runs %d-%d: A=%d, S=%d, W=%d, F=%d, T=%d\n", \
+			processes[i].pid, processes[i].arrivalTime, processes[i].exeDoneTime, \
+			processes[i].arrivalTime, processes[i].exeTime, processes[i].waitTime, \
+			processes[i].exeDoneTime, processes[i].turnaroundTime);
+	}
+
+	fclose(fp);
 }
 
 int main(int argc, char *argv[]){
@@ -34,23 +46,9 @@ int main(int argc, char *argv[]){
     double cpu_time_used;                              //
     start = clock();                                   //
 
-	if (strcmp(argv[1], "-t")==0) {
-		testmode = 1;
-		if (!(fp = fopen("test.dat", "rb"))){
-			perror("test .dat open filed\n");
-		}
-        if(trace){
-            printf("Struct \nindex: pid: arrivalTime: ");
-            printf("exeTime: totExeTime: remExeTime: exeStartTime\n");
-        }
-		argv[2] = "SRT";
-		argc = 3;
-	}
-	else {
-		if (!(fp = fopen(argv[1], "rb"))){
-			perror("sorry, .dat file import problem\n");
-			printf("provide the .dat file as first argument, should be in the same folder as executible\n");
-		}
+	if (!(fp = fopen(argv[1], "rb"))){
+		perror("sorry, .dat file import problem\n");
+		printf("provide the .dat file as first argument, should be in the same folder as executible\n");
 	}
 
 	while (fscanf(fp, "%d %d", &arrivalTime_in, &exeTime_in) != EOF) { //grab col 1 and 2 from file if it's not the end
@@ -59,6 +57,7 @@ int main(int argc, char *argv[]){
 		processes[pid-1].exeTime = exeTime_in;         //grab service time from second column in file
 		processes[pid-1].remExeTime = exeTime_in;      //set the remaining time counter to service time as well
 		processes[pid-1].complete = 0;                 //initialize to incomplete
+		processes[pid-1].exeDoneTime = 0;
 		pid++;                                         //increase the counter index
 	}
 	
@@ -83,15 +82,16 @@ int main(int argc, char *argv[]){
 		printf("FCFS, RR, STN, SRT\n");
 		return 1;                                     //end unsuccessfully
 	}
+    
+	processStatistics();
+	writeToFile();
+	//printArray();
 
-    //run statistics on processes[] array
-    printArray(pid);
-    
-    
     end = clock();                                     //finish clock and print exectution timer
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;  //
     printf("programExecutionTime: %f\n", cpu_time_used);      //
-    return 0;                                          //finish successfully
+    
+	return 0;                                          //finish successfully
 }
 
 

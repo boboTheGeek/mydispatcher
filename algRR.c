@@ -15,21 +15,21 @@ int roundRobin(unsigned short pid){
     unsigned short activeProcessesExist = 1;          //assume at least one live process at init
     unsigned short queuePos = 0;                      //keeps track of the last process queued, ready to "execute"
     unsigned short slicePosition = 1;                 //how far through the time slice we are
-    unsigned short sliceSize = 1;                     //default quantum size
-    unsigned short sliceIn = 1;                       //init quantum input size
-	int tP = pid;                                     //number of processes
+    unsigned short sliceSize = 10;                     //default quantum size
+    //unsigned short sliceIn = 1;                       //init quantum input size
+	int tP = TOTAL_ROWS;                                     //number of processes
 	int expiredCounter = 0;                            //number of completed processes
 	
-    printf("select quantum size or hit ENTER for default (1) \n");
-    scanf("%hd", &sliceIn);                            //user input for quantum size
-    if (sliceIn)
-        sliceSize = sliceIn;
+    //printf("select quantum size or hit ENTER for default (1) \n");
+    //scanf("%hd", &sliceIn);                            //user input for quantum size
+    //if (sliceIn)
+    //    sliceSize = sliceIn;
     
     /*update new processes to queue for each timestep*/
     while (activeProcessesExist) {                    //check processes left that aren't finished
-        unsigned short index = 0;                     //start evaluation of processes at row 1
-        while (processes[index].pid){                  //iterate input data
-            struct Process *ptr = &processes[index];   //assign pointer to the struct
+        //unsigned short index = 0;                     //start evaluation of processes at row 1
+		for (int i = 0; i < TOTAL_ROWS; i++){                  //iterate input data
+			struct Process *ptr = &processes[i];   //assign pointer to the struct
             if (!ptr->complete){                       //check if the process is live
                 activeProcessesExist = 1;              //any live processes sets flag
                 if (ptr->arrivalTime == globalTimeTicker){  //check if it's new to the queue
@@ -37,7 +37,7 @@ int roundRobin(unsigned short pid){
                     queuePos++;                        //move to next free space in array
                 }
             }
-            index++;                                   //increment to next struct in array
+            //index++;                                   //increment to next struct in array
         }
 
         if (!queue[activeProcess]->exeStartTime)       //if this process just began to execute
@@ -46,7 +46,7 @@ int roundRobin(unsigned short pid){
             queue[activeProcess]->complete = 1;        //if so, mark as complete
             activeProcess++;                           //move to next process in queue
 			activeProcess = activeProcess % tP;        //wrap around to beginning of queue
-			slicePosition = 1-1;                       //reset quantum counter
+			slicePosition = 1;                       //reset quantum counter
 			expiredCounter++;                          //increase tally for complete processes
             
             if (!queue[activeProcess]){                //if no more in queue
@@ -80,10 +80,10 @@ int roundRobin(unsigned short pid){
             return 0;                                  // finish successfully
         } else {
 			printf("time:%6ld   Q[i]:%6d   PID:%6d   ", globalTimeTicker, activeProcess, queue[activeProcess]->pid);
-			printf("remains:%4d   sliceloc:%4d\n", queue[activeProcess]->remExeTime, slicePosition);
+			printf("remains:%4d   sliceloc:%4d   ", queue[activeProcess]->remExeTime, slicePosition);
             globalTimeTicker ++;                       //otherwise, there's more work to do, go to next time step
         }
-        
+		printf("%d == %d \n", expiredCounter, tP);
 		if (expiredCounter >= tP){
 			break;
 		}

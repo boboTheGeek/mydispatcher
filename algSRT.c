@@ -9,7 +9,7 @@ File Updated: Oct 15, 2018
 
 #include "mydispatcher.h"
 
-int shortestRemainingTime(int tPin){
+int shortestRemainingTime(unsigned short tPin){
     
     unsigned short activeProcess = 0;                 //which process is "executing"
     unsigned short activeProcessesExist = 1;          //assume at least one live process at init

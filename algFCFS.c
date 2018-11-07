@@ -35,6 +35,7 @@ int firstComeFirstServe(unsigned short tPin){
             queue[activeProcess]->exeStartTime = globalTimeTicker;  //record the start time
         if ((queue[activeProcess]->remExeTime --) == 0){//decreast time remaining and see if it's 0
             queue[activeProcess]->complete = 1;        //if so, mark as complete
+			queue[activeProcess]->exeDoneTime = globalTimeTicker;
             activeProcess++;                           //move to next process in queue
             if (!queue[activeProcess]){                //if no more in queue
                 activeProcessesExist = 0;              //turn off flag
