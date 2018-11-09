@@ -26,12 +26,14 @@ void append(struct Process** head_ref, int arrivalTime_in, int exeTime_in, int p
     new_node->arrivalTime = arrivalTime_in;
     new_node->exeTime = exeTime_in;
     new_node->remExeTime = exeTime_in;                 //set the remaining counter to service time
-    new_node->exeStartTime = 5;
+    new_node->exeStartTime = 0;
     new_node->exeDoneTime = 0;
     new_node->turnaroundTime = 0;
     new_node->waitTime = 0;                            //init to no wait
     new_node->complete = 0;                            //init to incomplete
     new_node->next = NULL;                             //make this the last link
+    new_node->Qnext = NULL;                             //make this the last link
+
 
     if (*head_ref == NULL){                            //If the Linked List is empty,
         *head_ref = new_node;                          //then make the new node as head

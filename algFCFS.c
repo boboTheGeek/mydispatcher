@@ -13,18 +13,20 @@
 void appendQ(struct Process** head_ref, struct Process ** inProc){
     
     struct Process *last = *head_ref;   /* used in step 5*/
-    struct Process* new_node = (struct Process*) malloc(sizeof(struct Process));
-    new_node = *inProc;
-    new_node->Qnext = NULL;                             //make this the last link
+    //struct Process *new_node = (struct Process*) malloc(sizeof(struct Process));
+    //new_node = inProc;
+    
+    (*inProc)->Qnext = NULL;                              //make this the last link
     if (*head_ref == NULL){                            //If the Linked List is empty,
-        *head_ref = new_node;                          //then make the new node as head
+        *head_ref = *inProc;                            //then make the new node as head
         return;
     }
     
     while (last->Qnext != NULL)                        //loop till the last node
         last = last->Qnext;
     
-    last->Qnext = new_node;                             //make this the last node
+    last->Qnext = *inProc;                             //make this the last node
+    
     return;
 }
 
@@ -32,65 +34,60 @@ void appendQ(struct Process** head_ref, struct Process ** inProc){
 
 int firstComeFirstServe(struct Process *inProc){
     
-    //unsigned short int activeProcess = 0;             //which process is "executing"
+    printf("%lu\n", globalTimeTicker);
     int activeProcessesExist = 1;                      //assume at least one live process at init
-    unsigned short int index = 0;                 //start evaluation of processes at row 1
-    
-    
+                                                       //unsigned short int index = 0;                 //start evaluation of processes at row 1
     
     struct Process *queueList;
     queueList = NULL;
+    struct Process *activeProcess;             //which process is "executing"
     
     /*update new processes to queue for each timestep*/
-    while (activeProcessesExist && globalTimeTicker < 50) {        //check processes left that aren't finished
+    while (activeProcessesExist && globalTimeTicker < 100) {        //check processes left that aren't finished
         struct Process *ipIndex = inProc;
         while (ipIndex != NULL){                       //iterate input data
             
             if (!ipIndex->complete){                    //check if the process is live
                 activeProcessesExist = 1;              //any live processes sets flag
                 if (ipIndex->arrivalTime == globalTimeTicker){  //check if it's new to the queue
-                    printf("added one\n");
-                    appendQ(&queueList, &inProc);
-                    
-                    //if (queueList == NULL){
-                    //    queueList = inProc;
-                    //    printf("%d\n", queueList->pid);
-                    //}
-                    //while (last->next != NULL)                        //loop till the last node
-                    //    last = last->next;
-                    //queue[queuePos] = ptr;             //add to queue if just arrived
-                    //queuePos++;                        //move to next free space in array
-                    //last->next = new_node;
+                    appendQ(&queueList, &ipIndex);
                 }
             }
-            
             ipIndex = ipIndex->next;                     //go to next link
+        }
+        
+        //printf("%lu\n", globalTimeTicker);
+        
+        /*
+        struct Process * qI = queueList;
+        while (qI != NULL){
+            printf("pid %d\n", qI->pid);
+            qI = qI->Qnext;
+            
+        }*/
+        activeProcess = queueList;
+        /*process the queue/currently "executing" process*/
+        if (!activeProcess->exeStartTime){       //if this process just began to execute
+            activeProcess->exeStartTime = globalTimeTicker;  //record the start time
             
         }
-        index++;                                   //increment to next struct in array
+        printf("x %d\n", activeProcess->exeStartTime);
+        if ((activeProcess->remExeTime --) == 0){//EXECUTE - decreast time remaining and see if it's 0
+            activeProcess->complete = 1;        //if so, mark as complete
+            activeProcess->exeDoneTime = globalTimeTicker;
+            if (!activeProcess->Qnext){                //if no more in queue
+                activeProcessesExist = 0;              //turn off flag
+            } else {
+                printf("%ld=ticks %d=active ", globalTimeTicker, activeProcessesExist);
+                printf("%d=rem %d=activeProcess\n", activeProcess->remExeTime, activeProcess->pid);
+                activeProcess = activeProcess->Qnext;                           //move to next process in queue
+            }
+        }
+        
+        if (activeProcessesExist == 0){                //if all processes are complete
+            return 0;                                  // finish successfully
+        }
         globalTimeTicker ++;                       //otherwise, there's more work to do, go to next time step
-        printf("%lu\n", globalTimeTicker);
     }
-    
-    /*process the queue/currently "executing" process
-     if (!queue[activeProcess]->exeStartTime)       //if this process just began to execute
-     queue[activeProcess]->exeStartTime = globalTimeTicker;  //record the start time
-     if ((queue[activeProcess]->remExeTime --) == 0){//decreast time remaining and see if it's 0
-     queue[activeProcess]->complete = 1;        //if so, mark as complete
-     queue[activeProcess]->exeDoneTime = globalTimeTicker;
-     activeProcess++;                           //move to next process in queue
-     if (!queue[activeProcess]){                //if no more in queue
-     activeProcessesExist = 0;              //turn off flag
-     }
-     }
-     
-     if (activeProcessesExist == 0){                //if all processes are complete
-     return 0;                                  // finish successfully
-     } else {
-     
-     printf("%ld=ticks %d=active ", globalTimeTicker, activeProcessesExist);
-     printf("%d=rem %d=activeProcess  %d=index\n", queue[activeProcess]->remExeTime, activeProcess, index);
-     */
-
     return 0;
 }
