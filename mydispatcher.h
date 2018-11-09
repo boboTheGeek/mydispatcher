@@ -17,15 +17,17 @@ struct Process {
 	unsigned short remExeTime;
 	unsigned short exeStartTime;
 	unsigned short exeDoneTime;
-	char complete;
 	unsigned short turnaroundTime;
 	unsigned short waitTime;
+	char complete;
+    struct Process *next;
+    struct Process *Qnext;
 };
 
 struct Process processes[TOTAL_ROWS];                  //a list of the process structs
-struct Process *queue[TOTAL_ROWS];                     //set the queue to the same size as number of rows, but could be more efficient
+                                                       //set the queue to the same size as number of rows, but could be more efficient
 
-int firstComeFirstServe(unsigned short);
+int firstComeFirstServe(struct Process *);
 int roundRobin(unsigned short);
 int shortestTimeNext(unsigned short);
 int shortestRemainingTime(unsigned short);

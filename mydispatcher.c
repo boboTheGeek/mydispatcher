@@ -4,69 +4,76 @@ Project:      2 mydispatcher
 Programmer:   Rob Miles
 Professor:    Dr. Lee
 File Created: Oct 15, 2018
-File Updated: Nov 3, 2018
+File Updated: Nov 8, 2018
 */
 
 #include <string.h>
 #include <time.h>
+#include <stdlib.h>
 
 #include "mydispatcher.h"
 
 unsigned long globalTimeTicker = 0;
 
-void printArray(){
-    printf("index: pid: arrivalTime: ");
-    printf("exeTime: remExeTime: exeDoneTime  turnaroundTime\n");
-	for (int i = 0; i < TOTAL_ROWS; i++){
-        printf("%5d %5d %7d ", i, processes[i].pid, processes[i].arrivalTime);
-        printf("%10d %10d %10d %10d\n",processes[i].exeTime, processes[i].remExeTime, processes[i].exeDoneTime, processes[i].turnaroundTime);
+                                                       //reference (pointer to pointer) to the head
+                                                       //params are data from input.dat
+void append(struct Process** head_ref, int arrivalTime_in, int exeTime_in, int pid_in){
+                                                       // allocate node
+    struct Process* new_node = (struct Process*) malloc(sizeof(struct Process));
+    struct Process *last = *head_ref;   /* used in step 5*/
+    
+    new_node->pid = pid_in;
+    new_node->arrivalTime = arrivalTime_in;
+    new_node->exeTime = exeTime_in;
+    new_node->remExeTime = exeTime_in;                 //set the remaining counter to service time
+    new_node->exeStartTime = 5;
+    new_node->exeDoneTime = 0;
+    new_node->turnaroundTime = 0;
+    new_node->waitTime = 0;                            //init to no wait
+    new_node->complete = 0;                            //init to incomplete
+    new_node->next = NULL;                             //make this the last link
 
+    if (*head_ref == NULL){                            //If the Linked List is empty,
+        *head_ref = new_node;                          //then make the new node as head
+        return;
     }
+    
+    while (last->next != NULL)                        //loop till the last node
+        last = last->next;
+    
+    last->next = new_node;                             //change the next of last node
+    return;
 }
 
-void writeToFile(){
-	FILE * fp;
-	/* open the file for writing*/
-	fp = fopen("output.dat", "w");
-	for (int i = 0; i < TOTAL_ROWS; i++){
-		fprintf(fp, "%5d runs %d-%d: A=%d, S=%d, W=%d, F=%d, T=%d\n", \
-			processes[i].pid, processes[i].arrivalTime, processes[i].exeDoneTime, \
-			processes[i].arrivalTime, processes[i].exeTime, processes[i].waitTime, \
-			processes[i].exeDoneTime, processes[i].turnaroundTime);
-	}
-
-	fclose(fp);
-}
 
 int main(int argc, char *argv[]){
 	FILE *fp;                                          //pointer for a file
 	int arrivalTime_in, exeTime_in, pid = 1;           //
 	 
     clock_t start, end;                                //setup for execution timer
-    double cpu_time_used;                              //
+    double cpu_time_used;                             //
     start = clock();                                   //
 
 	if (!(fp = fopen(argv[1], "rb"))){
 		perror("sorry, .dat file import problem\n");
 		printf("provide the .dat file as first argument, should be in the same folder as executible\n");
 	}
-
-	while (fscanf(fp, "%d %d", &arrivalTime_in, &exeTime_in) != EOF) { //grab col 1 and 2 from file if it's not the end
-		processes[pid-1].pid = pid;                    //set struct pid to counter value
-		processes[pid-1].arrivalTime = arrivalTime_in; //grab arrival time from first column in file
-		processes[pid-1].exeTime = exeTime_in;         //grab service time from second column in file
-		processes[pid-1].remExeTime = exeTime_in;      //set the remaining time counter to service time as well
-		processes[pid-1].complete = 0;                 //initialize to incomplete
-		processes[pid-1].exeDoneTime = 0;
-		pid++;                                         //increase the counter index
-	}
+    
+    struct Process *inputProcesses;
+    inputProcesses = NULL;
+    pid = 1;
+    while (fscanf(fp, "%d %d", &arrivalTime_in, &exeTime_in) != EOF) { //grab col 1 and 2 from file if it's not the end
+        append(&inputProcesses, arrivalTime_in, exeTime_in, pid);
+        pid++;
+    }
+    
 	
 	if (argc != 3){                                    //if you don't have 2 input params
 		printf("Input parameters should be input.dat and <ALGORITHM> to run.\n");
 		return 1;                                     //end unsuccessfully
 	}
 	else if (strcmp(argv[2], "FCFS") == 0){           //check for and run FCFS algorithm request
-        firstComeFirstServe(pid);
+        firstComeFirstServe(inputProcesses);
 	}
 	else if (strcmp(argv[2], "RR") == 0){             //check for and run RR algorithm request
 		roundRobin(pid);
@@ -83,10 +90,13 @@ int main(int argc, char *argv[]){
 		return 1;                                     //end unsuccessfully
 	}
     
-	processStatistics();
-	writeToFile();
-	//printArray();
+	processStatistics(inputProcesses);
 
+    
+    
+    
+    
+    
     end = clock();                                     //finish clock and print exectution timer
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;  //
     printf("programExecutionTime: %f\n", cpu_time_used);      //

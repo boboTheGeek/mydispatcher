@@ -9,22 +9,50 @@ File Updated: Nov 7, 2018
 
 #include "mydispatcher.h"
 
-void processStatistics(){
-	float avgturnaround = 0;
+void processStatistics(struct Process *node){
+    FILE * fp;
+    /* open the file for writing*/
+    fp = fopen("output.dat", "w");
+    
+    float avgturnaround = 0;
 	float avgnormalizedTurnaround = 0;
 	float avgwaiting = 0;
 	
-	for (int i = 0; i < TOTAL_ROWS; i++){
-		processes[i].turnaroundTime = processes[i].exeDoneTime - processes[i].arrivalTime;
-		processes[i].waitTime = processes[i].turnaroundTime - processes[i].exeTime;
-		avgturnaround += processes[i].turnaroundTime;
-		avgwaiting += processes[i].waitTime;
-		avgnormalizedTurnaround += (float)(processes[i].turnaroundTime / processes[i].exeTime);
+    while (node != NULL)
+    {
+        /*
+        printf("P %d   ", node->pid);
+        printf("A %d   ", node->arrivalTime);
+        printf("S %d   ", node->exeTime);
+        printf("R %d   ", node->remExeTime);
+        printf("C %d   ", node->complete);
+        printf("D %d\n ", node->exeDoneTime);
+        */
+		node->turnaroundTime = node->exeDoneTime - node->arrivalTime;
+		node->waitTime = node->turnaroundTime - node->exeTime;
+		avgturnaround += node->turnaroundTime;
+		avgwaiting += node->waitTime;
+		avgnormalizedTurnaround += (float)(node->turnaroundTime / node->exeTime);
+        
+        fprintf(fp, "%5d runs %d-%d: A=%d, S=%d, W=%d, F=%d, T=%d\n", \
+                node->pid, \
+                node->arrivalTime, \
+                node->exeDoneTime, \
+                node->arrivalTime, \
+                node->exeTime, \
+                node->waitTime, \
+                node->exeDoneTime, \
+                node->turnaroundTime);
+        
+        node = node->next;
+
 	}
 	avgturnaround = (float)avgturnaround / TOTAL_ROWS;
 	avgwaiting = (float)avgwaiting / TOTAL_ROWS;
 	avgnormalizedTurnaround = (float) avgnormalizedTurnaround / TOTAL_ROWS;
-	printf("Average turnaround time = %0.4f \n", avgturnaround);
+	printf("\n\nAverage turnaround time = %0.4f \n", avgturnaround);
 	printf("Average normalized turnaround time = %0.4f \n", avgnormalizedTurnaround);
 	printf("Average waiting time = %0.4f \n", avgwaiting);
+    
+    fclose(fp);
 }

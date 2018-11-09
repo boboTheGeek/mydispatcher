@@ -6,3 +6,17 @@
 *.stackdump
 
 output\.dat
+
+mydispatcher\.xcworkspace/xcuserdata/bobby\.xcuserdatad/UserInterfaceState\.xcuserstate
+
+mydispatcher\.xcworkspace/contents\.xcworkspacedata
+
+\.DS_Store
+
+*.plist
+
+*.xcscheme
+
+*.xcsettings
+
+mydispatcher
