@@ -28,8 +28,9 @@ struct Process processes[TOTAL_ROWS];                  //a list of the process s
  struct Process *queue[TOTAL_ROWS];                                                       //set the queue to the same size as number of rows, but could be more efficient
 
 int firstComeFirstServe(struct Process *);
-int roundRobin(unsigned short);
+int roundRobin(struct Process *);
 int shortestTimeNext(unsigned short);
 int shortestRemainingTime(unsigned short);
 void processStatistics();
 void updateQ();
+void appendQ(struct Process**, struct Process **);

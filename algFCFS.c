@@ -10,30 +10,6 @@
 
 #include "mydispatcher.h"
 
-void appendQ(struct Process** head_ref, struct Process ** inProc){
-    
-    struct Process *last = *head_ref;   /* used in step 5*/
-    //struct Process *new_node = (struct Process*) malloc(sizeof(struct Process));
-    //new_node = inProc;
-    
-    (*inProc)->Qnext = NULL;                              //make this the last link
-    if (*head_ref == NULL){                            //If the Linked List is empty,
-        *head_ref = *inProc;                            //then make the new node as head
-        return;
-    }
-    
-    while (last->Qnext != NULL)                        //loop till the last node
-        last = last->Qnext;
-    
-    last->Qnext = *inProc;                             //make this the last node
-    
-    return;
-}
-
-void upQwNew(struct Process inputList, struct Process outputQueue){
-    
-    
-}
 
 int firstComeFirstServe(struct Process *inProc){
     
@@ -42,25 +18,21 @@ int firstComeFirstServe(struct Process *inProc){
     struct Process *activeProcess;                     //which process is "executing"
     activeProcess = queueList;
 
-    /*update new processes to queue for each timestep*/
     while (1) {                                        //check processes left that aren't finished
-        struct Process *ipIndex = inProc;
+        struct Process *ipIndex = inProc;              //iterator for queue management, reset to head each loop
         while (ipIndex != NULL){                       //iterate input data
-            
             if (!ipIndex->complete){                    //check if the process is live
                 if (ipIndex->arrivalTime == globalTimeTicker){  //check if it's new to the queue
-                    appendQ(&queueList, &ipIndex);
+                    appendQ(&queueList, &ipIndex);     //append
                 }
             }
-            ipIndex = ipIndex->next;                     //go to next link
+            ipIndex = ipIndex->next;                    //go to next link
         }
-        
-        upQwNew(*inProc, *queueList);
-        
-        if(activeProcess == NULL)
-            activeProcess = queueList;
-                /*process the queue/currently "executing" process*/
-        if (!activeProcess->exeStartTime){       //if this process just began to execute
+      
+        if(activeProcess == NULL)                      //if this is the first iteration
+            activeProcess = queueList;                 //set the working process to the head of the list
+
+        if (!activeProcess->exeStartTime){             //if this process just began to execute
             activeProcess->exeStartTime = globalTimeTicker;  //record the start time
         }
 

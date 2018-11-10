@@ -1,93 +1,96 @@
 /*    
-CSC521 Operating system
-Project:      2 mydispatcher
-Programmer:   Rob Miles
-Professor:    Dr. Lee
-File Created: Oct 15, 2018
-File Updated: Oct 15, 2018
-*/
+ CSC521 Operating system
+ Project:      2 mydispatcher
+ Programmer:   Rob Miles
+ Professor:    Dr. Lee
+ File Created: Oct 15, 2018
+ File Updated: Oct 15, 2018
+ */
 
 #include "mydispatcher.h"
 
-int roundRobin(unsigned short pid){
-	
-    unsigned short activeProcess = 0;                 //which process is "executing"
-    unsigned short activeProcessesExist = 1;          //assume at least one live process at init
-    unsigned short queuePos = 0;                      //keeps track of the last process queued, ready to "execute"
-    unsigned short slicePosition = 1;                 //how far through the time slice we are
+int roundRobin(struct Process *inProc){
+    
+    unsigned short slicePosition = 0;                 //how far through the time slice we are
     unsigned short sliceSize = 10;                     //default quantum size
-    //unsigned short sliceIn = 1;                       //init quantum input size
-	int tP = TOTAL_ROWS;                                     //number of processes
-	int expiredCounter = 0;                            //number of completed processes
-	
+                                                       //unsigned short sliceIn = 1;                       //init quantum input size
+    int expiredCounter = 0;                            //number of completed processes
+    
+    struct Process *queueList;
+    queueList = NULL;
+    struct Process *activeProcess;                     //which process is "executing"
+    activeProcess = queueList;
+    struct Process *previousProcess;
+    previousProcess = NULL;
+    
     //printf("select quantum size or hit ENTER for default (1) \n");
     //scanf("%hd", &sliceIn);                            //user input for quantum size
     //if (sliceIn)
     //    sliceSize = sliceIn;
     
-    /*update new processes to queue for each timestep*/
-    while (activeProcessesExist) {                    //check processes left that aren't finished
-        //unsigned short index = 0;                     //start evaluation of processes at row 1
-		for (int i = 0; i < TOTAL_ROWS; i++){                  //iterate input data
-			struct Process *ptr = &processes[i];   //assign pointer to the struct
-            if (!ptr->complete){                       //check if the process is live
-                activeProcessesExist = 1;              //any live processes sets flag
-                if (ptr->arrivalTime == globalTimeTicker){  //check if it's new to the queue
-                    queue[queuePos] = ptr;             //add to queue if just arrived
-                    queuePos++;                        //move to next free space in array
-                }
-            }
-            //index++;                                   //increment to next struct in array
-        }
 
-        if (!queue[activeProcess]->exeStartTime)       //if this process just began to execute
-            queue[activeProcess]->exeStartTime = globalTimeTicker;  //record the start time
-        if ((queue[activeProcess]->remExeTime --) == 0){//decreast time remaining and see if it's 0
-            queue[activeProcess]->complete = 1;        //if so, mark as complete
-            activeProcess++;                           //move to next process in queue
-			activeProcess = activeProcess % tP;        //wrap around to beginning of queue
-			slicePosition = 1;                       //reset quantum counter
-			expiredCounter++;                          //increase tally for complete processes
-            
-            if (!queue[activeProcess]){                //if no more in queue
-                activeProcessesExist = 0;              //turn off flag
-                activeProcess = 0;                     //go back to start of queue
-                while(queue[activeProcess]->pid){     //if you've just arrived at a completed process in the queue
-                    if (queue[activeProcess]->complete == 0){
-                        activeProcessesExist = 1;      //check if there's still incomplete processes in queue
-                    }
-                    activeProcess ++;                  //skip to a live process
+    while (1) {
+        struct Process *ipIndex = inProc;              //iterator for queue management, reset to head each loop
+        while (ipIndex != NULL){                       //iterate input data
+            if (!ipIndex->complete){                    //check if the process is live
+                if (ipIndex->arrivalTime == globalTimeTicker){  //check if it's new to the queue
+                    appendQ(&queueList, &ipIndex);     //append
                 }
             }
+            ipIndex = ipIndex->next;                     //go to next item in list
+        }
+       
+        if(activeProcess == NULL)                      //if this is the first iteration
+            activeProcess = queueList;                 //set the working process to the head of the list
+
+        
+        if (!activeProcess->exeStartTime){             //if this process just began to execute
+            activeProcess->exeStartTime = globalTimeTicker;  //record the start time
         }
         
-        /*process the queue/currently "executing" process*/
-        if (slicePosition == sliceSize){               //check if quantum is up
-            activeProcess++;                           //if so, move to next in queue
-            if(!queue[activeProcess]){                 //if there is no process there
-                activeProcess = 0;                     //
+        if (activeProcess->remExeTime == 0){           //and see if it's 0
+            activeProcess->complete = 1;               //if so, mark as complete
+            activeProcess->exeDoneTime = globalTimeTicker;
+            slicePosition = 1;                         //reset quantum counter
+            expiredCounter++;                          //increase tally for complete processes
+            
+            if (activeProcess->Qnext == NULL){         //if at end of queue
+                activeProcess = queueList;              //go back to start of queue
+                previousProcess->Qnext = NULL;         //drop the expired process
+            }else{
+                if (previousProcess){                  //if there is a previous process
+                    
+                    previousProcess->Qnext = activeProcess->Qnext;//link to jump over active (expired)
+                }else{
+                    queueList = activeProcess->Qnext;  //otherwise, drop the first process, link head to next
+                }
+                activeProcess = activeProcess->Qnext;  //move to the next process
+            }
+        } else if (slicePosition == sliceSize){       //check if quantum is up
+            previousProcess = activeProcess;
+            activeProcess = activeProcess->Qnext;      //if so, move to next in queue
+            if(activeProcess->Qnext == NULL){          //if there is no process there
+                activeProcess = queueList;            //go back to start of queue
             }
             slicePosition = 1;                         //
-        } else {
-            slicePosition ++;                          //normally, just increment quantum position
+        }else{
+            slicePosition ++;                          //increment quantum position
         }
         
-        while(queue[activeProcess]->complete == 1){     //if you've just arrived at a completed process in the queue
-            activeProcess ++;                          //skip to a live process
-        }
-        
-        if (activeProcessesExist == 0){                //if all processes are complete
-            return 0;                                  // finish successfully
+        if (expiredCounter == TOTAL_ROWS){
+            break;                                     // finish successfully
         } else {
-			printf("time:%6ld   Q[i]:%6d   PID:%6d   ", globalTimeTicker, activeProcess, queue[activeProcess]->pid);
-			printf("remains:%4d   sliceloc:%4d   ", queue[activeProcess]->remExeTime, slicePosition);
+            
+            activeProcess->remExeTime --;                  //EXECUTE - decreast time remaining
             globalTimeTicker ++;                       //otherwise, there's more work to do, go to next time step
+            if (activeProcess->pid < 50){
+                printf("time:%6ld   PID:%6d   AT:%4d  ", globalTimeTicker, activeProcess->pid, activeProcess->arrivalTime);
+                printf("remains:%4d   sliceloc:%4d   ", activeProcess->remExeTime, slicePosition);
+            }
         }
-		printf("%d == %d \n", expiredCounter, tP);
-		if (expiredCounter >= tP){
-			break;
-		}
-
+        if (activeProcess->pid < 50){
+            printf("%d == %d \n", expiredCounter, TOTAL_ROWS);
+        }
     }
     
     return 0;

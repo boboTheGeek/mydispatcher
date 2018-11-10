@@ -78,7 +78,7 @@ int main(int argc, char *argv[]){
         firstComeFirstServe(inputProcesses);
 	}
 	else if (strcmp(argv[2], "RR") == 0){             //check for and run RR algorithm request
-		roundRobin(pid);
+		roundRobin(inputProcesses);
 	}
 	else if (strcmp(argv[2], "STN") == 0){            //check for and run STN algorithm request
         shortestTimeNext(pid);
