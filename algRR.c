@@ -16,12 +16,12 @@ int roundRobin(struct Process *inProc){
                                                        //unsigned short sliceIn = 1;                       //init quantum input size
     int expiredCounter = 0;                            //number of completed processes
     
-    struct Process *queueList;
-    queueList = NULL;
+    struct Process *queueList;                         //dispatcher queue
+    queueList = NULL;                                  //initialized to nothing, gets first process later
     struct Process *activeProcess;                     //which process is "executing"
-    activeProcess = queueList;
-    struct Process *previousProcess;
-    previousProcess = NULL;
+    activeProcess = queueList;                         //will keep track of the executing process
+    struct Process *previousProcess;                   //holds last process for when we need to remove a process
+    previousProcess = NULL;                            //it starts as null
     
     //printf("select quantum size or hit ENTER for default (1) \n");
     //scanf("%hd", &sliceIn);                            //user input for quantum size
@@ -37,18 +37,17 @@ int roundRobin(struct Process *inProc){
                     appendQ(&queueList, &ipIndex);     //append
                 }
             }
-            ipIndex = ipIndex->next;                     //go to next item in list
+            ipIndex = ipIndex->next;                   //go to next item in list
         }
        
         if(activeProcess == NULL)                      //if this is the first iteration
             activeProcess = queueList;                 //set the working process to the head of the list
 
-        
         if (!activeProcess->exeStartTime){             //if this process just began to execute
             activeProcess->exeStartTime = globalTimeTicker;  //record the start time
         }
         
-        if (activeProcess->remExeTime == 0){           //and see if it's 0
+        if (activeProcess->remExeTime == 0){           //see if reminaing time is 0
             activeProcess->complete = 1;               //if so, mark as complete
             activeProcess->exeDoneTime = globalTimeTicker;
             slicePosition = 1;                         //reset quantum counter
@@ -70,7 +69,7 @@ int roundRobin(struct Process *inProc){
             previousProcess = activeProcess;
             activeProcess = activeProcess->Qnext;      //if so, move to next in queue
             if(activeProcess->Qnext == NULL){          //if there is no process there
-                activeProcess = queueList;            //go back to start of queue
+                activeProcess = queueList;             //go back to start of queue
             }
             slicePosition = 1;                         //
         }else{
@@ -81,7 +80,7 @@ int roundRobin(struct Process *inProc){
             break;                                     // finish successfully
         } else {
             
-            activeProcess->remExeTime --;                  //EXECUTE - decreast time remaining
+            activeProcess->remExeTime --;              //EXECUTE - decreast time remaining
             globalTimeTicker ++;                       //otherwise, there's more work to do, go to next time step
             if (activeProcess->pid < 50){
                 printf("time:%6ld   PID:%6d   AT:%4d  ", globalTimeTicker, activeProcess->pid, activeProcess->arrivalTime);

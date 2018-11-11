@@ -81,10 +81,10 @@ int main(int argc, char *argv[]){
 		roundRobin(inputProcesses);
 	}
 	else if (strcmp(argv[2], "STN") == 0){            //check for and run STN algorithm request
-        shortestTimeNext(pid);
+        shortestTimeNext(inputProcesses);
     }
 	else if (strcmp(argv[2], "SRT") == 0){            //check for and run SRT algorithm request
-        shortestRemainingTime(pid);
+        shortestRemainingTime(inputProcesses);
 	}
 	else{                                              //if the input parameter string wasn't found, warn and remind what is OK
 		printf("Make sure you're <ALGORITHM> parameter is one of the following [in all caps]:\n");

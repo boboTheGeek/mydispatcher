@@ -29,8 +29,8 @@ struct Process processes[TOTAL_ROWS];                  //a list of the process s
 
 int firstComeFirstServe(struct Process *);
 int roundRobin(struct Process *);
-int shortestTimeNext(unsigned short);
-int shortestRemainingTime(unsigned short);
+int shortestTimeNext(struct Process *);
+int shortestRemainingTime(struct Process *);
 void processStatistics();
 void updateQ();
 void appendQ(struct Process**, struct Process **);
