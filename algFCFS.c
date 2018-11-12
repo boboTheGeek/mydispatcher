@@ -12,14 +12,15 @@
 
 
 int firstComeFirstServe(struct Process *inProc){
-    
+    int expiredCounter = 0;                            //number of completed processes
     struct Process *queueList;
     queueList = NULL;
     struct Process *activeProcess;                     //which process is "executing"
     activeProcess = queueList;
 
     while (1) {                                        //check processes left that aren't finished
-        struct Process *ipIndex = inProc;              //iterator for queue management, reset to head each loop
+        struct Process *ipIndex;
+        ipIndex = inProc;              //iterator for queue management, reset to head each loop
         while (ipIndex != NULL){                       //iterate input data
             if (!ipIndex->complete){                    //check if the process is live
                 if (ipIndex->arrivalTime == globalTimeTicker){  //check if it's new to the queue
@@ -36,16 +37,20 @@ int firstComeFirstServe(struct Process *inProc){
             activeProcess->exeStartTime = globalTimeTicker;  //record the start time
         }
 
-        if ((activeProcess->remExeTime --) == 0){      //EXECUTE - decreast time remaining and see if it's 0
+        if (activeProcess->remExeTime == 0){      //EXECUTE - decreast time remaining and see if it's 0
             activeProcess->complete = 1;               //if so, mark as complete
             activeProcess->exeDoneTime = globalTimeTicker;
+            expiredCounter++;                          //increase tally for complete processes
             
-            if (activeProcess->Qnext == NULL){         //if no more in queue
+            if (expiredCounter == TOTAL_ROWS){         //if no more in queue
                 printf("end\n");
                 return 0;
             }
-            activeProcess = activeProcess->Qnext;
+            if(activeProcess->Qnext)
+                activeProcess = activeProcess->Qnext;
         }
+        if(!activeProcess->complete)
+            activeProcess->remExeTime --;
         printf("%ld=ticks ", globalTimeTicker);
         printf("%d=rem %d=activeProcess\n", activeProcess->remExeTime, activeProcess->pid);
 
