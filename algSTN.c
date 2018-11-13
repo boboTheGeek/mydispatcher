@@ -4,28 +4,27 @@
  Programmer:   Rob Miles
  Professor:    Dr. Lee
  File Created: Oct 15, 2018
- File Updated: Nov 6, 2018
+ File Updated: Nov 11, 2018
  */
 
 #include "mydispatcher.h"
 
-int shortestTimeNext(struct Process *inProc){
-    
+int shortestProcessNext(struct Process *inProc){
+
     int expiredCounter = 0;                            //number of completed processes
-    
     struct Process *queueList;                         //dispatcher queue
     queueList = NULL;                                  //initialized to nothing, gets first process later
     struct Process *activeProcess;                     //which process is "executing"
     activeProcess = queueList;                         //will keep track of the executing process
     struct Process *previousProcess;                   //holds last process for when we need to remove a process
     previousProcess = NULL;                            //it starts as null
-    struct Process *tmpProcess;
-    tmpProcess = NULL;
-    struct Process *processIterator;
-    processIterator = NULL;
+    struct Process *tmpProcess;                        //used for handoff of last process
+    tmpProcess = NULL;                                 //start with NULL, assign later
+    struct Process *processIterator;                   //iterator for process selection
+    processIterator = NULL;                            //start with NULL, assign later
     
-    while (1) {                     //check processes left that aren't finished
-        unsigned short sizeComp;
+    while (1) {                                       //check processes left that aren't finished
+        unsigned short sizeComp;                      //for process selection
         struct Process *ipIndex = inProc;              //iterator for queue management, reset to head each loop
         while (ipIndex != NULL){                       //iterate input data
             if (!ipIndex->complete){                    //check if the process is live
@@ -44,9 +43,15 @@ int shortestTimeNext(struct Process *inProc){
         }
         
         if (activeProcess->remExeTime == 0){           //see if reminaing time is 0
+            if(!activeProcess->complete)               //catch when stalled on empty queue
+                expiredCounter++;                      //increase tally for complete processes
             activeProcess->complete = 1;               //if so, mark as complete
             activeProcess->exeDoneTime = globalTimeTicker;
-            expiredCounter++;                          //increase tally for complete processes
+            
+            if (expiredCounter == TOTAL_ROWS){         //if no more in queue
+                printf("end\n");
+                return 0;
+            }
             
             if (activeProcess->Qnext == NULL){         //if at end of queue
                 activeProcess = queueList;              //go back to start of queue
@@ -69,20 +74,21 @@ int shortestTimeNext(struct Process *inProc){
                     sizeComp = processIterator->remExeTime;  //set new comparison value
                     previousProcess = tmpProcess;      //previous process = temp
                 }else{
-                    sizeComp = 55535;
+                    sizeComp = 65535;
                 }
                 tmpProcess = processIterator;          //store current iterator as "last" for next iteration
                 processIterator = processIterator->Qnext;  //set iterator to next in queue
             }
         }
-        if (expiredCounter == TOTAL_ROWS){             //if all of the processes are complete
-            break;                                     //break the loop
-        } else {
+        
+        //if (expiredCounter == TOTAL_ROWS){             //if all of the processes are complete
+        //    break;                                     //break the loop
+        //} else {
             activeProcess->remExeTime --;              //EXECUTE - decreast time remaining
             globalTimeTicker ++;                       //otherwise, there's more work to do, go to next time step
             printf("time:%6ld   PID:%6d   AT:%4d  ", globalTimeTicker, activeProcess->pid, activeProcess->arrivalTime);
             printf("remains:%4d   size:%4d   ", activeProcess->remExeTime, activeProcess->exeTime);
-        }
+        //}
          printf("%d == %d \n", expiredCounter, TOTAL_ROWS);
     }
     return 0;

@@ -20,9 +20,9 @@ int firstComeFirstServe(struct Process *inProc){
 
     while (1) {                                        //check processes left that aren't finished
         struct Process *ipIndex;
-        ipIndex = inProc;              //iterator for queue management, reset to head each loop
-        while (ipIndex != NULL){                       //iterate input data
-            if (!ipIndex->complete){                    //check if the process is live
+        ipIndex = inProc;                              //iterator for queue management, reset to head each loop
+        while (ipIndex != NULL){                      //iterate input data
+            if (!ipIndex->complete){                   //check if the process is live
                 if (ipIndex->arrivalTime == globalTimeTicker){  //check if it's new to the queue
                     appendQ(&queueList, &ipIndex);     //append
                 }
@@ -37,24 +37,23 @@ int firstComeFirstServe(struct Process *inProc){
             activeProcess->exeStartTime = globalTimeTicker;  //record the start time
         }
 
-        if (activeProcess->remExeTime == 0){      //EXECUTE - decreast time remaining and see if it's 0
+        if (activeProcess->remExeTime == 0){           //EXECUTE - decreast time remaining and see if it's 0
             if(!activeProcess->complete)               //catch when stalled on empty queue
                 expiredCounter++;                      //increase tally for complete processes
             activeProcess->complete = 1;               //if so, mark as complete
             activeProcess->exeDoneTime = globalTimeTicker;
             
-            if (expiredCounter == TOTAL_ROWS){         //if no more in queue
-                printf("end\n");
+            if (expiredCounter == TOTAL_ROWS){         //if no more in queue exit function
                 return 0;
             }
-            if(activeProcess->Qnext)
+            if(activeProcess->Qnext)                   //jump to Qnext if there is one
                 activeProcess = activeProcess->Qnext;
         }
-        if(!activeProcess->complete)
+        if(!activeProcess->complete)                   //do work if activeProcess is live
             activeProcess->remExeTime --;
-        printf("%ld=ticks ", globalTimeTicker);
-        printf("%d=rem %d=activeProcess  ", activeProcess->remExeTime, activeProcess->pid);
-        printf("%d=expiredCounter\n", expiredCounter);
+        //printf("%ld=ticks ", globalTimeTicker);
+        //printf("%d=rem %d=activeProcess  ", activeProcess->remExeTime, activeProcess->pid);
+        //printf("%d=expiredCounter\n", expiredCounter);
         globalTimeTicker ++;                           //otherwise, there's more work to do, go to next time step
     }
     return 0;

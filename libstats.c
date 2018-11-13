@@ -53,7 +53,6 @@ void processStatistics(struct Process *node){
                 node->complete);
         
         node = node->next;                             //switch to next node for while loop
-
 	}
 	avgturnaround = (float)avgturnaround / (float)TOTAL_ROWS; //complete calcuation for average turnaround
 	avgwaiting = (float)avgwaiting / (float)TOTAL_ROWS;       //complete calcuation for average waiting

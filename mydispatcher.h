@@ -7,30 +7,26 @@ File Created: Oct 15, 2018
 File Updated: Nov 3, 2018
 */
 #include <stdio.h>
-#define TOTAL_ROWS 1500
+#define TOTAL_ROWS 10000                          //total number of process rows
 unsigned long globalTimeTicker;                       //a ticker that will keep track of schedule position
 
 struct Process {
-	unsigned short pid;
-	unsigned short arrivalTime;
-	unsigned short exeTime;
-	unsigned short remExeTime;
-	unsigned short exeStartTime;
-	unsigned short exeDoneTime;
-	unsigned short turnaroundTime;
-	unsigned short waitTime;
-	char complete;
-    struct Process *next;
-    struct Process *Qnext;
+	unsigned short pid;                               //process ID
+	unsigned short arrivalTime;                       //process arrival time to queue
+	unsigned short exeTime;                           //service time length
+	unsigned short remExeTime;                        //amount of remaining cycles to be done
+	unsigned short exeStartTime;                      //when process began to be active
+	unsigned short exeDoneTime;                       //process finished time
+	unsigned short turnaroundTime;                    //turnaround
+	unsigned short waitTime;                          //wait time
+	char complete;                                     //if completed processing
+    struct Process *next;                              //linked list ref for input of all processes
+    struct Process *Qnext;                             //linked list ref for process queue
 };
-
-struct Process processes[TOTAL_ROWS];                  //a list of the process structs
- struct Process *queue[TOTAL_ROWS];                                                       //set the queue to the same size as number of rows, but could be more efficient
 
 int firstComeFirstServe(struct Process *);
 int roundRobin(struct Process *);
-int shortestTimeNext(struct Process *);
+int shortestProcessNext(struct Process *);
 int shortestRemainingTime(struct Process *);
 void processStatistics();
-void updateQ();
 void appendQ(struct Process**, struct Process **);
