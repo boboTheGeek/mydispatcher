@@ -12,7 +12,7 @@
 int roundRobin(struct Process *inProc){
     
     unsigned short slicePosition = 0;                 //how far through the time slice we are
-    unsigned short sliceSize = 1;                     //default quantum size
+    unsigned short sliceSize = 3;                     //default quantum size
                                                        //unsigned short sliceIn = 1;                       //init quantum input size
     int expiredCounter = 0;                            //number of completed processes
     
