@@ -38,9 +38,10 @@ int firstComeFirstServe(struct Process *inProc){
         }
 
         if (activeProcess->remExeTime == 0){      //EXECUTE - decreast time remaining and see if it's 0
+            if(!activeProcess->complete)               //catch when stalled on empty queue
+                expiredCounter++;                      //increase tally for complete processes
             activeProcess->complete = 1;               //if so, mark as complete
             activeProcess->exeDoneTime = globalTimeTicker;
-            expiredCounter++;                          //increase tally for complete processes
             
             if (expiredCounter == TOTAL_ROWS){         //if no more in queue
                 printf("end\n");
@@ -52,8 +53,8 @@ int firstComeFirstServe(struct Process *inProc){
         if(!activeProcess->complete)
             activeProcess->remExeTime --;
         printf("%ld=ticks ", globalTimeTicker);
-        printf("%d=rem %d=activeProcess\n", activeProcess->remExeTime, activeProcess->pid);
-
+        printf("%d=rem %d=activeProcess  ", activeProcess->remExeTime, activeProcess->pid);
+        printf("%d=expiredCounter\n", expiredCounter);
         globalTimeTicker ++;                           //otherwise, there's more work to do, go to next time step
     }
     return 0;
