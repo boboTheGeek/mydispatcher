@@ -33,7 +33,7 @@ void append(struct Process** head_ref, int arrivalTime_in, int exeTime_in, int p
     new_node->complete = 0;                            //init to incomplete
     new_node->next = NULL;                             //make this the last link
     new_node->Qnext = NULL;                            //make this the last link
-	new_node->Qprev = NULL;                            //make this the last link
+	new_node->Qprev = NULL;                            //make no previous link
 
     if (*head_ref == NULL){                            //If the Linked List is empty,
         *head_ref = new_node;                          //then make the new node as head
