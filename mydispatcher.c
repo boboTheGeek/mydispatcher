@@ -54,10 +54,10 @@ int main(int argc, char *argv[]){
     inputProcesses = NULL;                             //and set it to null for now
     
     clock_t start, end;                                //setup for execution timer - not part of main project
-    double cpu_time_used;                             //init timer var  - not part of main project
+    double cpu_time_used;                              //init timer var  - not part of main project
     start = clock();                                   //start clock - not part of main project
 
-	if (!(fp = fopen(argv[1], "rb"))){                //open the input file for reading
+	if (!(fp = fopen(argv[1], "rb"))){                 //open the input file for reading
 		printf("provide the .dat file as first argument, should be in the same folder as executible\n"); //complain if it didn't work
 	}
     
@@ -68,9 +68,9 @@ int main(int argc, char *argv[]){
     }
     
 	
-	if (argc != 3){                                    //if you don't have 2 input params
+	if (argc != 3){                                     //if you don't have 2 input params
 		printf("Input parameters should be input.dat and <ALGORITHM> to run.\n");
-		return 1;                                     //end unsuccessfully
+		return 1;                                       //end unsuccessfully
 	} else if (strcmp(argv[2], "FCFS") == 0){           //check for and run FCFS algorithm request
         firstComeFirstServe(inputProcesses);
 	} else if (strcmp(argv[2], "RR") == 0){             //check for and run RR algorithm request
@@ -79,22 +79,17 @@ int main(int argc, char *argv[]){
         shortestProcessNext(inputProcesses);
     } else if (strcmp(argv[2], "SRT") == 0){            //check for and run SRT algorithm request
         shortestRemainingTime(inputProcesses);
-	} else {                                              //if the input parameter string wasn't found, warn and remind what is OK
+	} else {                                            //if the input parameter string wasn't found, warn and remind what is OK
 		printf("Make sure you're <ALGORITHM> parameter is one of the following [in all caps]:\n");
 		printf("FCFS, RR, SPN, SRT\n");
-		return 1;                                     //end unsuccessfully
+		return 1;                                       //end unsuccessfully
 	}
     
 	processStatistics(inputProcesses);
 
-    
-    
-    
-    
-    
     end = clock();                                     //finish clock and print exectution timer
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;  //
-    printf("programExecutionTime: %f\n", cpu_time_used);      //
+    printf("\nprogramExecutionTime: %f\n", cpu_time_used);      //
     
 	return 0;                                          //finish successfully
 }
