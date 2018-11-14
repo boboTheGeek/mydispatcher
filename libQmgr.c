@@ -24,6 +24,6 @@ void appendQ(struct Process** head_ref, struct Process ** inProc){
         last = last->Qnext;
     }
     last->Qnext = new_node;                             //make this the last node
-    
+	new_node->Qprev = last;
     return;
 }

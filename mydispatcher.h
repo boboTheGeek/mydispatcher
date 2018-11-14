@@ -7,7 +7,7 @@ File Created: Oct 15, 2018
 File Updated: Nov 3, 2018
 */
 #include <stdio.h>
-#define TOTAL_ROWS 10000                          //total number of process rows
+#define TOTAL_ROWS 1500                          //total number of process rows
 unsigned long globalTimeTicker;                       //a ticker that will keep track of schedule position
 
 struct Process {
@@ -22,6 +22,7 @@ struct Process {
 	char complete;                                     //if completed processing
     struct Process *next;                              //linked list ref for input of all processes
     struct Process *Qnext;                             //linked list ref for process queue
+	struct Process *Qprev;                             //linked list ref for process queue
 };
 
 int firstComeFirstServe(struct Process *);
