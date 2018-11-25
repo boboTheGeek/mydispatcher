@@ -35,9 +35,6 @@ int shortestRemainingTime(struct Process *inProc){
 							sizeComp = ipIndex->exeTime;      //set size comparison variable
 							nextProcess = ipIndex;          //switch to it
                             flag = 1;
-                            printf("aP %d, ", activeProcess->pid);
-                            printf("testpoint\n");
-
 						}
 					}
 				
@@ -53,12 +50,12 @@ int shortestRemainingTime(struct Process *inProc){
 			activeProcess->exeStartTime = globalTimeTicker;   //record the start time
 		}
         //print queue for troublehsooting
-         struct Process *tmpQ = queueList;
+         /*struct Process *tmpQ = queueList;
          while(tmpQ){
              printf("%d-%d ", tmpQ->pid, tmpQ->remExeTime);
          tmpQ = tmpQ->Qnext;
          }
-         printf("__");
+         printf("__");*/
         if (activeProcess && activeProcess->remExeTime == 0){ //if active process reminaing time is 0
 			if (!activeProcess->complete)                     //catch when stalled on empty queue
 				expiredCounter++;                             //increase tally for complete processes
@@ -93,7 +90,6 @@ int shortestRemainingTime(struct Process *inProc){
 					activeProcess->Qnext->Qprev = NULL;       //set Qprev to NULL aka HEAD
 				}
 				//activeProcess = nextProcess;                  //move to the next process
-
             }
 
 			sizeComp = 65535;                                 //set large number to compare shorter processes to
@@ -110,7 +106,6 @@ int shortestRemainingTime(struct Process *inProc){
 
 				processIterator = processIterator->Qnext;     //set iterator to next in queue
 			}
-
 		}
         if(flag){
             activeProcess = nextProcess;
@@ -120,9 +115,9 @@ int shortestRemainingTime(struct Process *inProc){
 			if (activeProcess->remExeTime>0){                 //keep old processes where they are timing wise
 				activeProcess->remExeTime--;                  //EXECUTE - decreast time remaining
 			}
-			printf("time:%6ld   PID:%6d   AT:%4d  ", globalTimeTicker, activeProcess->pid, activeProcess->arrivalTime);
-			printf("remains:%4d   size:%4d   ", activeProcess->remExeTime, activeProcess->exeTime);
-			printf("%d == %d \n", expiredCounter, TOTAL_ROWS);
+			//printf("time:%6ld   PID:%6d   AT:%4d  ", globalTimeTicker, activeProcess->pid, activeProcess->arrivalTime);
+			//printf("remains:%4d   size:%4d   ", activeProcess->remExeTime, activeProcess->exeTime);
+			//printf("%d == %d \n", expiredCounter, TOTAL_ROWS);
 		}
 		globalTimeTicker++;                                   //there's more work to do, increment timer
 	}

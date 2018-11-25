@@ -42,7 +42,7 @@ int shortestProcessNext(struct Process *inProc){
 			if (!activeProcess->complete)                     //catch when stalled on empty queue
 				expiredCounter++;                             //increase tally for complete processes
 			activeProcess->complete = 1;                      //if so, mark as complete
-			activeProcess->exeDoneTime = globalTimeTicker;
+			activeProcess->exeDoneTime = globalTimeTicker;    //mark when process was complete
 
 			if (expiredCounter == TOTAL_ROWS){                //if no more in queue end the algorithm!
 				return 0;

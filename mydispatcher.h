@@ -8,7 +8,7 @@ File Updated: Nov 3, 2018
 File Updated: Nov 13, 2018
 */
 #include <stdio.h>
-#define TOTAL_ROWS 1000                          //total number of process rows
+#define TOTAL_ROWS 10000                          //total number of process rows
 unsigned long globalTimeTicker;                       //a ticker that will keep track of schedule position
 
 struct Process {

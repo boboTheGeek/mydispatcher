@@ -24,12 +24,13 @@ int roundRobin(struct Process *inProc){
     nextProcess = NULL;                                //it starts as null
     
     while (1) {
-        
+
         struct Process *ipIndex;
         ipIndex = inProc;                              //iterator for queue management, reset to head each loop
         while (ipIndex != NULL){                      //iterate input data
             if (!ipIndex->complete){                   //check if the process is live
                 if (ipIndex->arrivalTime == globalTimeTicker){  //check if it's new to the queue
+
                     appendQ(&queueList, &ipIndex);     //append
                 }
             }
@@ -48,8 +49,9 @@ int roundRobin(struct Process *inProc){
 		if (activeProcess && !activeProcess->exeStartTime){  //if this process just began to execute
             activeProcess->exeStartTime = globalTimeTicker;  //record the start time
         }
+        printf("tp ===\n");
 
-		if (activeProcess->remExeTime == 0){            //see if reminaing time is 0
+		if (activeProcess && activeProcess->remExeTime == 0){  //see if reminaing time is 0
             if(!activeProcess->complete)                //catch when stalled on empty queue
                 expiredCounter++;                       //increase tally for complete processes
             activeProcess->complete = 1;                //if so, mark as complete
@@ -59,16 +61,20 @@ int roundRobin(struct Process *inProc){
             if (expiredCounter == TOTAL_ROWS){          //if no more in queue
                 return 0;
             }
-			
-            if (activeProcess->Qnext == NULL){          //if at end of queue
-                activeProcess->Qprev->Qnext = NULL;     //drop the expired process ?????
-					activeProcess = queueList;          //loop to beginning
-					if (queueList == NULL){             //if queue list is empty
-						activeProcess = NULL;           //set active process to NULL
-					}
+
+            if (activeProcess->Qnext == NULL){         //if at end of queue
+                if(!activeProcess->Qprev){             //if you're also at the front, just make queue empty
+                    queueList = NULL;
+
+                }else{
+                activeProcess->Qprev->Qnext = NULL;    //drop the expired process ?????
+                activeProcess = queueList;             //loop to beginning
+                }
+                if (queueList == NULL){                //if queue list is empty
+                    activeProcess = NULL;              //set active process to NULL
+                }
             } else {
                 nextProcess = activeProcess->Qnext;
-				
                 if (activeProcess->Qprev){                              //if there is a previous process
 					activeProcess->Qprev->Qnext = activeProcess->Qnext; //link to jump over active (expired)
 					activeProcess->Qnext->Qprev = activeProcess->Qprev; //link to jump reverse over expired
@@ -78,15 +84,13 @@ int roundRobin(struct Process *inProc){
 					queueList = activeProcess->Qnext;  //otherwise, drop the first process, link head to next
 					activeProcess->Qnext->Qprev = NULL;//set Qprev to NULL aka HEAD
 				}
-				activeProcess = nextProcess;  //move to the next process
+				activeProcess = nextProcess;           //move to the next process
 			            
             }
-
-        } else if (slicePosition == sliceSize){        //check if quantum is up
-
+        } else if (activeProcess && slicePosition == sliceSize){ //check if quantum is up
             if (activeProcess->Qnext == NULL){         //if there is no process there
                 activeProcess = queueList;             //go back to start of queue
-            
+
             } else {
                 queueList->Qnext->Qprev = NULL;        //prep 2nd node to be first
                 queueList = queueList->Qnext;          //make 2nd node first
@@ -104,7 +108,7 @@ int roundRobin(struct Process *inProc){
         } else {
             slicePosition ++;                          //increment quantum position
         }
-		         
+
 		if (activeProcess){
 			if (activeProcess->remExeTime > 0){        //if process is still live
 				activeProcess->remExeTime--;           //EXECUTE - decreast time remaining
