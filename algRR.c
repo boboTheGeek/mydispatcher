@@ -12,7 +12,7 @@
 int roundRobin(struct Process *inProc){
     
     unsigned short slicePosition = 0;                 //how far through the time slice we are
-    unsigned short sliceSize = 4;                     //default quantum size
+    unsigned short sliceSize = 1;                     //default quantum size
     //unsigned short sliceIn = 1;                      //init quantum input size
     int expiredCounter = 0;                            //number of completed processes
   
@@ -49,7 +49,6 @@ int roundRobin(struct Process *inProc){
 		if (activeProcess && !activeProcess->exeStartTime){  //if this process just began to execute
             activeProcess->exeStartTime = globalTimeTicker;  //record the start time
         }
-        printf("tp ===\n");
 
 		if (activeProcess && activeProcess->remExeTime == 0){  //see if reminaing time is 0
             if(!activeProcess->complete)                //catch when stalled on empty queue
