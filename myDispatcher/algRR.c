@@ -23,6 +23,10 @@ int roundRobin(struct Process *inProc){
     struct Process *nextProcess;                       //holds last process for when we need to remove a process
     nextProcess = NULL;                                //it starts as null
     
+    printf("Enter a quantum size: ");
+    scanf("%hu", &sliceSize);
+    printf("slice sice is %d", sliceSize);
+    
     while (1) {
 
         struct Process *ipIndex;
