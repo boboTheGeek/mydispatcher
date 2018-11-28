@@ -19,6 +19,8 @@ mydispatcher\.xcworkspace/contents\.xcworkspacedata
 
 *.xcsettings
 
-mydispatcher
+
 
 sub/~WRL0001\.tmp
+
+*.tmp
